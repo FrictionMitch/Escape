@@ -36,6 +36,7 @@ private:
 	UPROPERTY(EditAnywhere)
 		AActor* ObjectThatOpensDoor;
 
+	bool bIsDoorTriggerd = false;
 	float InitialYaw;
 	float CurrentYaw;
 
