@@ -1,5 +1,6 @@
 // Copyright Michael Brisson 2020
 
+#include "CollisionQueryParams.h"
 #include "DrawDebugHelpers.h"
 #include "Engine\World.h"
 #include "Grabber.h"
@@ -43,17 +44,35 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 	//	*PlayerViewpointRotation.ToString()
 	//);
 
-	FVector LineEnd = PlayerViewpointLocation + PlayerViewpointRotation.Vector() * Reach;
+	FVector RaycastEnd = PlayerViewpointLocation + PlayerViewpointRotation.Vector() * Reach;
 
 	DrawDebugLine(
 		GetWorld(),
 		PlayerViewpointLocation,
-		LineEnd,
+		RaycastEnd,
 		FColor().Green,
 		false,
 		0.f,
 		0,
 		5.f
 	);
+
+	// Raycast
+	FHitResult Hit;
+	FCollisionQueryParams TraceParams(GetFName(), false, GetOwner());
+	GetWorld()->LineTraceSingleByObjectType(
+		OUT Hit,
+		PlayerViewpointLocation,
+		RaycastEnd,
+		FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody),
+		TraceParams
+	);
+
+	AActor* ActorHit = Hit.GetActor();
+
+	if (Hit.Actor != NULL)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("%s"), *ActorHit->GetName());
+	}
 }
 
