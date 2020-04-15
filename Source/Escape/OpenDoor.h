@@ -30,7 +30,9 @@ private:
 	UPROPERTY(EditAnywhere)
 		float RotationAmount = 90.f;
 	UPROPERTY(EditAnywhere)
-		float RotationSpeed = 0.5f;
+		float OpenSpeed = 0.5f;
+	UPROPERTY(EditAnywhere)
+		float CloseSpeed = 1.f;
 	UPROPERTY(EditAnywhere)
 		ATriggerVolume* PressurePlate;
 	UPROPERTY(EditAnywhere)
@@ -39,5 +41,8 @@ private:
 	bool bIsDoorTriggerd = false;
 	float InitialYaw;
 	float CurrentYaw;
+	float DoorLastOpened = 0.f;
 
+	UPROPERTY(EditAnywhere)
+		float DoorCloseDelay = 2.f;
 };
