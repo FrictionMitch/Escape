@@ -33,7 +33,12 @@ private:
 		
 	UPhysicsHandleComponent* PhysicsHandle = nullptr;
 	UInputComponent* Input;
+	bool bIsHolding = false;
 
 	void Grab();
+	void GetPhysicsHandle();
+	void GetInput();
 
+	// Return first actor within reach having a physics body
+	FHitResult GetFirstObjectInReach() const;
 };

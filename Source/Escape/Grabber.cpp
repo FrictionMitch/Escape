@@ -15,7 +15,6 @@ UGrabber::UGrabber()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	// ...
 }
 
 
@@ -23,18 +22,32 @@ UGrabber::UGrabber()
 void UGrabber::BeginPlay()
 {
 	Super::BeginPlay();
+	GetPhysicsHandle();
+	GetInput();
+}
 
+void UGrabber::Grab()
+{
+	bIsHolding = !bIsHolding;
+	if (bIsHolding)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Button Pressed"));
+		GetFirstObjectInReach();
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Button RELEASED"));
+	}
+}
+
+void UGrabber::GetPhysicsHandle()
+{
 	//Check for physics handle component
 	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
-	Input = GetOwner()->FindComponentByClass<UInputComponent>();
 
 	if (PhysicsHandle)
 	{
-		if (Input)
-		{
-			UE_LOG(LogTemp, Warning, TEXT("Input found"));
-			Input->BindAction("Grab", IE_Pressed, this, &UGrabber::Grab);
-		}
+		
 	}
 	else
 	{
@@ -42,26 +55,21 @@ void UGrabber::BeginPlay()
 	}
 }
 
-void UGrabber::Grab()
+void UGrabber::GetInput()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Button Pressed"));
+	Input = GetOwner()->FindComponentByClass<UInputComponent>();
+	if (Input)
+	{
+		Input->BindAction("Grab", IE_Pressed, this, &UGrabber::Grab);
+	}
 }
 
-
-// Called every frame
-void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+FHitResult UGrabber::GetFirstObjectInReach() const
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
 	FVector PlayerViewpointLocation;
 	FRotator PlayerViewpointRotation;
 
 	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(OUT PlayerViewpointLocation, OUT PlayerViewpointRotation);
-
-	//UE_LOG(LogTemp, Warning, TEXT("Viewpoint Location: %s\n Viewpoint Rotation: %s"), 
-	//	*PlayerViewpointLocation.ToString(), 
-	//	*PlayerViewpointRotation.ToString()
-	//);
 
 	FVector RaycastEnd = PlayerViewpointLocation + PlayerViewpointRotation.Vector() * Reach;
 
@@ -93,5 +101,14 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 	{
 		UE_LOG(LogTemp, Warning, TEXT("%s"), *ActorHit->GetName());
 	}
+	return Hit;
+}
+
+
+// Called every frame
+void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
 }
 
