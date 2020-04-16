@@ -24,8 +24,27 @@ void UGrabber::BeginPlay()
 {
 	Super::BeginPlay();
 
-	//Get Player Viewpoint
-	
+	//Check for physics handle component
+	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
+	Input = GetOwner()->FindComponentByClass<UInputComponent>();
+
+	if (PhysicsHandle)
+	{
+		if (Input)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Input found"));
+			Input->BindAction("Grab", IE_Pressed, this, &UGrabber::Grab);
+		}
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("%s is missing PhysicsHandle Component"), *GetOwner()->GetName());
+	}
+}
+
+void UGrabber::Grab()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Button Pressed"));
 }
 
 

@@ -33,7 +33,7 @@ void UWorldPosition::BeginPlay()
 	FString* ALocation = &ActorLocation;
 
 
-	UE_LOG(LogTemp, Warning, TEXT("The object \"%s\" is located at %s"), **AName, **ALocation);
+	//UE_LOG(LogTemp, Warning, TEXT("The object \"%s\" is located at %s"), **AName, **ALocation);
 }
 
 
