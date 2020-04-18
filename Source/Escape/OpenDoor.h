@@ -25,6 +25,7 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	void OpenDoor(float DeltaTime);
+	float GetTotalMassOfActors() const;
 
 private:
 	UPROPERTY(EditAnywhere)
@@ -33,6 +34,8 @@ private:
 		float OpenSpeed = 0.5f;
 	UPROPERTY(EditAnywhere)
 		float CloseSpeed = 1.f;
+	UPROPERTY(EditAnywhere)
+		float DoorTriggerAmount = 60.f;
 	UPROPERTY(EditAnywhere)
 		ATriggerVolume* PressurePlate;
 	UPROPERTY(EditAnywhere)
