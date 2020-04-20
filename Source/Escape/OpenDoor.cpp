@@ -2,7 +2,9 @@
 
 
 #include "OpenDoor.h"
+#include "Components\AudioComponent.h"
 #include "Components\PrimitiveComponent.h"
+#include "DelayAction.h"
 #include "GameFramework\Actor.h"
 #include "GameFramework\PlayerController.h"
 #include "Engine\World.h"
@@ -25,8 +27,6 @@ void UOpenDoor::BeginPlay()
 {
 	Super::BeginPlay();
 
-	ObjectThatOpensDoor = GetWorld()->GetFirstPlayerController()->GetPawn();
-
 	InitialYaw = GetOwner()->GetActorRotation().Yaw;
 	CurrentYaw = InitialYaw;
 	RotationAmount += InitialYaw;
@@ -44,7 +44,6 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 	if (PressurePlate)
 	{
-		//if (PressurePlate->IsOverlappingActor(ObjectThatOpensDoor))
 		if (GetTotalMassOfActors() > DoorTriggerAmount)
 		{
 			bIsDoorTriggerd = true;
@@ -65,16 +64,31 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 void UOpenDoor::OpenDoor(float DeltaTime)
 {
 	FRotator OpenRotation = GetOwner()->GetActorRotation();
-
+	DoorOpenSound = GetOwner()->FindComponentByClass<UAudioComponent>();
+	DoorCloseSound = GetOwner()->FindComponentByClass<UAudioComponent>();
+	//bSoundHasPlayed = false;
 	// Open Door
 	if (bIsDoorTriggerd)
 	{
 		CurrentYaw = FMath::Lerp(CurrentYaw, RotationAmount, OpenSpeed * DeltaTime);
+		if (!bOpenDoorHasPlayed)
+		{
+			bOpenDoorHasPlayed = true;
+			bCloseDoorHasPlayed = false;
+			DoorOpenSound->Play();
+		}
 	}
 	// Close Door
 	else
 	{
+		float CurrentTime = GetWorld()->TimeSeconds;
 		CurrentYaw = FMath::Lerp(CurrentYaw, InitialYaw, CloseSpeed * DeltaTime);
+		if (!bCloseDoorHasPlayed)
+		{
+			bCloseDoorHasPlayed = true;
+			bOpenDoorHasPlayed = false;
+			DoorCloseSound->Play();
+		}
 	}
 
 	OpenRotation.Yaw = CurrentYaw;
@@ -87,6 +101,8 @@ float UOpenDoor::GetTotalMassOfActors() const
 	float TotalMass = 0.f;
 
 	TArray<AActor*> OverlappingActors;
+
+	if (!PressurePlate) { return TotalMass; }
 	PressurePlate->GetOverlappingActors(OUT OverlappingActors);
 
 	for (AActor* Actor : OverlappingActors)

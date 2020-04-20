@@ -56,18 +56,32 @@ void UGrabber::Grab()
 		UE_LOG(LogTemp, Warning, TEXT("Button Pressed"));
 		FHitResult HitResult = GetFirstObjectInReach();
 		UPrimitiveComponent* ComponentToGrab = HitResult.GetComponent();
+		AActor* ActorHit = HitResult.GetActor();
 
-		if (HitResult.GetActor())
+		if (ActorHit)
 		{
-			PhysicsHandle->GrabComponentAtLocation(
+			if(!PhysicsHandle) {return;}
+
+			/*PhysicsHandle->GrabComponentAtLocation
+			(
 				ComponentToGrab,
 				NAME_None,
 				GetRaycastEnd()
+			);*/
+
+			PhysicsHandle->GrabComponent
+			(
+				ComponentToGrab,
+				NAME_None,
+				GetRaycastEnd(),
+				true
 			);
 		}
 	}
 	else
 	{
+		if (!PhysicsHandle) { return; }
+
 		UE_LOG(LogTemp, Warning, TEXT("Button RELEASED"));
 		PhysicsHandle->ReleaseComponent();
 	}

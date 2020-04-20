@@ -17,15 +17,15 @@ public:
 	// Sets default values for this component's properties
 	UOpenDoor();
 
-protected:
-	// Called when the game starts
-	virtual void BeginPlay() override;
-
-public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	void OpenDoor(float DeltaTime);
+	void GetSound();
 	float GetTotalMassOfActors() const;
+
+protected:
+	// Called when the game starts
+	virtual void BeginPlay() override;
 
 private:
 	UPROPERTY(EditAnywhere)
@@ -37,15 +37,21 @@ private:
 	UPROPERTY(EditAnywhere)
 		float DoorTriggerAmount = 60.f;
 	UPROPERTY(EditAnywhere)
-		ATriggerVolume* PressurePlate;
+		float DoorCloseDelay = 2.f;
 	UPROPERTY(EditAnywhere)
-		AActor* ObjectThatOpensDoor;
+		ATriggerVolume* PressurePlate = nullptr;
+	UPROPERTY(EditAnywhere)
+		AActor* ObjectThatOpensDoor = nullptr;
+	UPROPERTY(EditAnywhere)
+		UAudioComponent* DoorOpenSound = nullptr;
+	UPROPERTY(EditAnywhere)
+		UAudioComponent* DoorCloseSound = nullptr;
 
 	bool bIsDoorTriggerd = false;
+	bool bOpenDoorHasPlayed = false;
+	bool bCloseDoorHasPlayed = true;
 	float InitialYaw;
 	float CurrentYaw;
 	float DoorLastOpened = 0.f;
 
-	UPROPERTY(EditAnywhere)
-		float DoorCloseDelay = 2.f;
 };
